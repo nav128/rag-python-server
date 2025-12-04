@@ -1,0 +1,10 @@
+LLM_PROVIDER=openai:gpt-4
+// given the provider is openai
+OPENAI_API_KEY=
+EMBEDDINGS_MODEL=text-embedding-3-small
+VECTORDBURL=http://0.0.0.0:6333
+VECTORDBCOLLECTION=
+SERVER_API_KEY=
+
+//optional
+OPENAI_PROJECT_ID=proj_RJkGwZKG2xaGvx6gVrfIdD0W
