@@ -2,7 +2,7 @@ from embeddings import get_embedding
 import vector_store
 
 
-async def you_know_what(text: str): # relavant vector db results
+async def retrive_and_augment(text: str): # relavant vector db results
     # embed
     queryembedding = get_embedding(text)
     # search vector db
@@ -28,6 +28,6 @@ async def you_know_what(text: str): # relavant vector db results
 if __name__ == "__main__":
     import asyncio
     sample_text = "moshe is short shmuel is tall"
-    results = asyncio.run(you_know_what(sample_text))
+    results = asyncio.run(retrive_and_augment(sample_text))
     for res in results:
         print(f"Score: {res.score}, Text: {res.text}, Metadata: {res.metadata}")

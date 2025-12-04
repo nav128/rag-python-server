@@ -1,30 +1,17 @@
-from config import LLM_PROVIDER
+
+import os
 from pydantic import BaseModel
 from pydantic_ai import Agent, ModelRequest, RunContext
 import logging
 from typing import Optional
 
 from vector_store import searchsimilar
-from llm_provider import stream_llm_response, ChatMessage
+from models import ChatMessage, AgentState, MyOutput, SearchResult
 
 logger = logging.getLogger(__name__)
-
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")
 MAX_HISTORY_MESSAGES_INCLUDE = 20
-class SearchResult(BaseModel):
-    """Result from RAG search."""
-    chunk_id: str
-    text: str
-    relevance_score: float
-    source_file: str
 
-
-class AgentState(BaseModel):
-    """Agent execution state."""
-    conversation_history: list[ChatMessage]
-    search_results: list[SearchResult] = []
-
-class MyOutput(BaseModel):
-    message: str
 
 # Define the agent
 rag_agent = Agent(
@@ -138,38 +125,6 @@ async def run_agent(
         conversation_history.append(ChatMessage(role="assistant", content=error_msg))
         yield error_msg
         return
-
-
-async def stream_agent_response(
-    user_message: str,
-    conversation_history: Optional[list[ChatMessage]] = None,
-    provider: str=  LLM_PROVIDER,
-):
-    """
-    Stream agent response token by token.
-    
-    Args:
-        user_message: User's input message.
-        conversation_history: Previous chat messages.
-        provider: LLM provider to use.
-        
-    Yields:
-        Response tokens/chunks.
-    """
-    if conversation_history is None:
-        conversation_history = []
-    
-    conversation_history.append(ChatMessage(role="user", content=user_message))
-    state = AgentState(conversation_history=conversation_history)
-    
-    logger.info(f"Streaming agent response with {len(conversation_history)} messages")
-    
-    full_response = ""
-    async for chunk in stream_llm_response(conversation_history):
-        full_response += chunk
-        yield chunk
-    
-    conversation_history.append(ChatMessage(role="assistant", content=full_response))
 
 
 if __name__ == "__main__":

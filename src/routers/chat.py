@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 import logging
 
 from agent import run_agent, stream_agent_response
-from llm_provider import ChatMessage
+from models import ChatMessage
 
 
 logger = logging.getLogger(__name__)
@@ -31,20 +31,11 @@ async def stream_chat(
     logger.info(f"Session: {session_id}, Question: {question}")
     
     try:
-        # Retrieve or initialize conversation history for this session
         if session_id not in sessions:
             sessions[session_id] = []
         
         conversation_history = sessions[session_id]
         run = run_agent(question, conversation_history)
-        # async def generate():
-        #     full_response = ""
-        #     async for chunk in stream_agent_response(question, conversation_history):
-        #         full_response += chunk
-        #         yield chunk
-            
-        #     # Update session history
-        #     sessions[session_id] = conversation_history
         
         return StreamingResponse(run, media_type="text/event-stream")
         
@@ -73,9 +64,7 @@ async def simple_chat(
     logger.info(f"Simple Chat Question: {question}")
     
     try:
-        # For simplicity, we won't maintain session history here
-        conversation_history = [ChatMessage(role="user", content=question)]
-        
+                
         full_response = await run_agent(question)
         
         return {"response": full_response}

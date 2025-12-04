@@ -1,5 +1,7 @@
+import os
 from openai import OpenAI
-from config import EMBEDDINGS_MODEL, OPENAIAPIKEY
+EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL")
+OPENAIAPIKEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAIAPIKEY)
 
 def get_embedding(text: str, dim: int = 10) -> list[float]:
